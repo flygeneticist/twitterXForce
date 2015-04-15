@@ -3,7 +3,7 @@
 require('../vendor/autoload.php');
 require_once('TwitterAPIExchange.php');
 // import access tokens from a config file
-require('../config.php');
+// require('../config.php');
 
 $app = new Silex\Application();
 $app['debug'] = true;
