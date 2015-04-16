@@ -37,10 +37,11 @@ $app->get('/twitter', function() use($app) {
 
 $app->post('/twitter', function() use($app) {
     $app['monolog']->addDebug('logging POST Twitter page output.');
-    if ($_POST['users']) {
+    $users = $_POST['users'];
+    if ($users) {
         users = array();
-        for (usr in users) {
-            get_followers(usr)
+        for ($usr in $users) {
+            get_followers($usr)
         }
         return 'Processing your Twitter POST request.';
     } else {
@@ -49,14 +50,24 @@ $app->post('/twitter', function() use($app) {
 });
 
 /* HELPER FUNCTIONS */
-function get_followers(user) {
-    followers = array();
+function get_followers($user) {
+    $cursor = -1;
+    $followers = array();
     do {
-        // grab and append users to array
-        res = $twitter ->setGetfield($getfield)
-                       ->buildOauth($url, $requestMethod)
-                       ->performRequest();
-    } while (pages.next_cursor != null);
+        $res_dict = $twitter->setGetfield($getfield.$user.'&cursor='.cursor)
+                            ->buildOauth($url, $requestMethod)
+                            ->performRequest();
+        $cursor = res_dict['next_cursor'];
+        if (res_dict["errors"][0]["message"] != "") {
+            return "<h3>Looks like there was there was a problem with your request.</h3>
+                    <p>Twitter returned the following error message(code:".$res_dict["errors"][0]["code"].
+                    "):</p><blockquote>".$res_dict["errors"][0]["message"]."</blockquote>";
+        } else {
+            // do something with the JSON data before moving to the next page
+            // TO DO: remove test return statement to test cursor function
+            return $res_dict;
+        }
+    } while ($cursor != 0);
 }
 
 /* Run the application */
