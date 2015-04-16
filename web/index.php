@@ -7,7 +7,7 @@ $settings = array(
 	'oauth_access_token'        => getenv('access_token'),
 	'oauth_access_token_secret' => getenv('access_token_secret'),
 	'consumer_key'              => getenv('consumer_key'),
-	'consumer_key_secret'       => getenv('consumer_key_secret')
+	'consumer_secret'           => getenv('consumer_key_secret')
 );
 
 // setup for twitter API request
