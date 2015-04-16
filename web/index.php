@@ -8,7 +8,7 @@ $settings = array(
     'access_token_secret' => getenv('access_token_secret'),
     'consumer_key' => getenv('consumer_key'),
     'consumer_key_secret' => getenv('consumer_key_secret')
-)
+);
 
 // setup for twitter API request
 $url = 'https://api.twitter.com/1.1/followers/list.json';
@@ -41,7 +41,7 @@ $app->post('/twitter', function() use($app) {
     if ($users) {
         $users = array();
         for ($usr in $users) {
-            get_followers($usr)
+            get_followers($usr);
         }
         return 'Processing your Twitter POST request.';
     } else {
@@ -58,10 +58,10 @@ function get_followers($user) {
                             ->buildOauth($url, $requestMethod)
                             ->performRequest();
         $cursor = $res_dict['next_cursor'];
-        if ($res_dict["errors"][0]["message"] != "") {
-            return "<h3>Looks like there was there was a problem with your request.</h3>
-                    <p>Twitter returned the following error message(code:".$res_dict["errors"][0]["code"].
-                    "):</p><blockquote>".$res_dict["errors"][0]["message"]."</blockquote>";
+        if ($res_dict['errors'][0]['message'] != '') {
+            return '<h3>Looks like there was there was a problem with your request.</h3>
+                    <p>Twitter returned the following error message(code:'.$res_dict['errors'][0]['code'].
+                    '):</p><blockquote>'.$res_dict['errors'][0]['message'].'</blockquote>';
         } else {
             // do something with the JSON data before moving to the next page
             // TO DO: remove test return statement to test cursor function
