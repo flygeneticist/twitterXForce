@@ -2,8 +2,11 @@
 
 require('../vendor/autoload.php');
 require_once('TwitterAPIExchange.php');
-/* Note: Access tokens will now be stored
-as environment varibales on Heroku. */
+// Access tokens are stored as environment varibales on Heroku server.
+$access_token = getenv('access_token');
+$access_token_secret = getenv('access_token_secret');
+$consumer_key = getenv('consumer_key');
+$consumer_key_secret = getenv('consumer_key_secret');
 
 $app = new Application();
 $app['debug'] = true;
