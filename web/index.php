@@ -38,8 +38,10 @@ $app->get('/twitter', function () use ($app) {
 $app->post('/twitter', function () use ($app) {
 		$data = array();
 		$app['monolog']->addDebug('logging POST Twitter page output.');
-		if ($_POST['users']) {
-			$users = array($_POST['users']);
+		$users = $_POST['users'];
+		if ($users != null && $users != '') {
+			echo 'Users passed in: '.$users;
+			$users = explode(',', $users);
 			foreach ($users as $usr) {
 				array_push($data, get_followers($usr));
 			}
@@ -50,11 +52,11 @@ $app->post('/twitter', function () use ($app) {
 	});
 
 /* HELPER FUNCTIONS */
-function get_followers($user) {
+function get_followers($usr) {
 	$cursor    = -1;
 	$followers = array();
 	do {
-		$res_dict = json_decode($twitter->setGetfield($getfield.$user.'&cursor='.$cursor)
+		$res_dict = json_decode($twitter->setGetfield($getfield.$usr.'&cursor='.$cursor)
 			->buildOauth($url, $requestMethod)->performRequest(), $assoc = TRUE);
 		$cursor = $res_dict['next_cursor'];
 		if ($res_dict['errors'][0]['message'] != '') {
