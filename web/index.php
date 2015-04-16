@@ -43,7 +43,6 @@ $app->post('/twitter', function () use ($app) {
 			foreach ($users as $usr) {
 				get_followers($usr);
 			}
-			return 'Processing your Twitter POST request.';
 		} else {
 			return 'Users were not supplied correctly.';
 		}
@@ -65,7 +64,7 @@ function get_followers($user) {
 		} else {
 			// do something with the JSON data before moving to the next page
 			// TO DO: remove test return statement to test cursor function
-			return $res_dict;
+			echo $res_dict;
 		}
 	} while ($cursor != 0);
 }
