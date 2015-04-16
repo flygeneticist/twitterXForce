@@ -36,13 +36,14 @@ $app->get('/twitter', function () use ($app) {
 	});
 
 $app->post('/twitter', function () use ($app) {
+		$data = array();
 		$app['monolog']->addDebug('logging POST Twitter page output.');
-		$users = $_POST['users'];
-		if ($users) {
-			$users = array();
+		if ($_POST['users']) {
+			$users = array($_POST['users']);
 			foreach ($users as $usr) {
-				get_followers($usr);
+				array_push($data, get_followers($usr));
 			}
+			return '<h3>Here are the results of your API call</h3><br /><p>'.$data.'</p>';
 		} else {
 			return 'Users were not supplied correctly.';
 		}
@@ -62,11 +63,10 @@ function get_followers($user) {
                     <p>Twitter returned the following error message(code:'.$res_dict['errors'][0]['code'].
 			'):</p><blockquote>'.$res_dict['errors'][0]['message'].'</blockquote>';
 		} else {
-			// do something with the JSON data before moving to the next page
-			// TO DO: remove test return statement to test cursor function
-			echo $res_dict;
+			array_push($followers, $res_dict);
 		}
 	} while ($cursor != 0);
+	return $followers;
 }
 
 /* Run the application */
