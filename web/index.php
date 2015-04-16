@@ -54,9 +54,8 @@ function get_followers($user) {
 	$cursor    = -1;
 	$followers = array();
 	do {
-		$res_dict = $twitter->setGetfield($getfield.$user.'&cursor='.$cursor)
-		                    ->buildOauth($url, $requestMethod)
-		                    ->performRequest();
+		$res_dict = json_decode($twitter->setGetfield($getfield.$user.'&cursor='.$cursor)
+			->buildOauth($url, $requestMethod)->performRequest(), $assoc = TRUE);
 		$cursor = $res_dict['next_cursor'];
 		if ($res_dict['errors'][0]['message'] != '') {
 			return '<h3>Looks like there was there was a problem with your request.</h3>
