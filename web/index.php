@@ -11,10 +11,13 @@ $settings = array(
 );
 
 // setup for twitter API request
-$url           = 'https://api.twitter.com/1.1/followers/list.json';
-$getfield      = '?skip_status=true&count=200&username=';
-$requestMethod = 'GET';
-$twitter       = new TwitterAPIExchange($settings);
+$url        = 'https://api.twitter.com/1.1/followers/list.json';
+$postFields = array(
+	'screen_name' => none,
+	'count'       => 200,
+	'skip_status' => 1,
+);
+$twitter = new TwitterAPIExchange($settings);
 
 $app          = new Silex\Application();
 $app['debug'] = true;
@@ -41,9 +44,7 @@ $app->post('/twitter', function () use ($app) {
 		$users = $_POST['users'];
 		if ($users != null && $users != '') {
 			$users = explode(',', $users);
-			echo 'Users passed in: '.$users;
 			foreach ($users as $usr) {
-				echo 'User processing: '.$usr;
 				array_push($data, get_followers($usr));
 			}
 			return '<h3>Here are the results of your API call</h3><br /><p>'.$data.'</p>';
@@ -54,11 +55,12 @@ $app->post('/twitter', function () use ($app) {
 
 /* HELPER FUNCTIONS */
 function get_followers($usr) {
-	$cursor    = -1;
-	$followers = array();
+	$cursor                    = -1;
+	$followers                 = array();
+	$postFields['screen_name'] = $usr;
 	do {
-		$res_dict = json_decode($twitter->setGetfield($getfield.$usr.'&cursor='.$cursor)
-			->buildOauth($url, $requestMethod)->performRequest(), $assoc = TRUE);
+		$res_dict = json_decode($twitter->buildOauth($url, $requestMethod)
+			->setPostfields($postFields)->performRequest(), $assoc = TRUE);
 		$cursor = $res_dict['next_cursor'];
 		if ($res_dict['errors'][0]['message'] != '') {
 			return '<h3>Looks like there was there was a problem with your request.</h3>
@@ -68,6 +70,7 @@ function get_followers($usr) {
 			array_push($followers, $res_dict);
 		}
 	} while ($cursor != 0);
+	$postFields['screen_name'] = none;
 	return $followers;
 }
 
