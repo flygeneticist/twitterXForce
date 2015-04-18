@@ -11,13 +11,9 @@ $settings = array(
 );
 
 // setup for twitter API request
-$url        = 'https://api.twitter.com/1.1/followers/list.json';
-$postFields = array(
-	'screen_name' => none,
-	'count'       => 200,
-	'skip_status' => 1,
-);
-$twitter = new TwitterAPIExchange($settings);
+$url           = 'https://api.twitter.com/1.1/followers/list.json';
+$requestMethod = 'GET';
+$getField      = '?skip_status=1&count=200&screen_name=';
 
 $app          = new Silex\Application();
 $app['debug'] = true;
@@ -55,22 +51,18 @@ $app->post('/twitter', function () use ($app) {
 
 /* HELPER FUNCTIONS */
 function get_followers($usr) {
-	$cursor                    = -1;
-	$followers                 = array();
-	$postFields['screen_name'] = $usr;
+	$twitter    = new TwitterAPIExchange($settings);
+	$cursor     = -1;
+	$followers  = array();
+	$getField_u = $getField.$usr;
 	do {
-		$res_dict = json_decode($twitter->buildOauth($url, $requestMethod)
-			->setPostfields($postFields)->performRequest(), $assoc = TRUE);
-		$cursor = $res_dict['next_cursor'];
-		if ($res_dict['errors'][0]['message'] != '') {
-			return '<h3>Looks like there was there was a problem with your request.</h3>
-                    <p>Twitter returned the following error message(code:'.$res_dict['errors'][0]['code'].
-			'):</p><blockquote>'.$res_dict['errors'][0]['message'].'</blockquote>';
-		} else {
-			array_push($followers, $res_dict);
-		}
+		$res = $twitter->setGetfield($getField_u)
+		               ->buildOauth($url, $requestMethod)
+		               ->performRequest();
+		echo $res;
+		array_push($followers, json_decode($res, $assoc = TRUE));
+		$cursor = $res['next_cursor'];
 	} while ($cursor != 0);
-	$postFields['screen_name'] = none;
 	return $followers;
 }
 
