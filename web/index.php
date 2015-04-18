@@ -2,18 +2,6 @@
 
 require ('../vendor/autoload.php');
 require_once ('TwitterAPIExchange.php');
-// Access tokens are stored as environment varibales on Heroku server.
-$settings = array(
-	'oauth_access_token'        => getenv('access_token'),
-	'oauth_access_token_secret' => getenv('access_token_secret'),
-	'consumer_key'              => getenv('consumer_key'),
-	'consumer_secret'           => getenv('consumer_key_secret')
-);
-
-// setup for twitter API request
-$url           = 'https://api.twitter.com/1.1/followers/list.json';
-$requestMethod = 'GET';
-$getField      = '?skip_status=1&count=200&screen_name=';
 
 $app          = new Silex\Application();
 $app['debug'] = true;
@@ -51,10 +39,24 @@ $app->post('/twitter', function () use ($app) {
 
 /* HELPER FUNCTIONS */
 function get_followers($usr) {
-	$twitter    = new TwitterAPIExchange($settings);
-	$cursor     = -1;
-	$followers  = array();
-	$getField_u = $getField.$usr;
+	// Empty array to store all Jsonified follower data
+	$followers = array();
+	// Access tokens are stored as environment varibales on Heroku server.
+	$settings = array(
+		'oauth_access_token'        => getenv('access_token'),
+		'oauth_access_token_secret' => getenv('access_token_secret'),
+		'consumer_key'              => getenv('consumer_key'),
+		'consumer_secret'           => getenv('consumer_key_secret')
+	);
+
+	// setup for twitter API request
+	$twitter       = new TwitterAPIExchange($settings);
+	$url           = 'https://api.twitter.com/1.1/followers/list.json';
+	$requestMethod = 'GET';
+	$getField      = '?skip_status=1&count=200&screen_name=';
+	$cursor        = -1;
+	$getField_u    = $getField.$usr;
+
 	do {
 		$res = $twitter->setGetfield($getField_u)
 		               ->buildOauth($url, $requestMethod)
