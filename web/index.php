@@ -40,9 +40,10 @@ $app->post('/twitter', function () use ($app) {
 		$app['monolog']->addDebug('logging POST Twitter page output.');
 		$users = $_POST['users'];
 		if ($users != null && $users != '') {
-			echo 'Users passed in: '.$users;
 			$users = explode(',', $users);
+			echo 'Users passed in: '.$users;
 			foreach ($users as $usr) {
+				echo 'User processing: '.$usr;
 				array_push($data, get_followers($usr));
 			}
 			return '<h3>Here are the results of your API call</h3><br /><p>'.$data.'</p>';
