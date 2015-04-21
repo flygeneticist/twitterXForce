@@ -3,7 +3,7 @@ ini_set('max_execution_time', 600);
 ini_set('memory_limit', '256M');
 
 require ('../vendor/autoload.php');
-require_once ('TwitterOAuth.php');
+use Abraham\TwitterOAuth\TwitterOAuth;
 
 $app          = new Silex\Application();
 $app['debug'] = true;
@@ -14,7 +14,8 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
 	));
 
 // Our web handlers
-$app->get('/', function () use ($app) {
+$app->get('/',
+function () use ($app) {
 		$app['monolog']->addDebug('logging output.');
 		return 'Hello';
 	});
