@@ -65,21 +65,18 @@ function get_followers($usr) {
 		$i          = 1;
 
 		foreach ($ids_arrays as $implode) {
-			$user_ids = implode(',', $implode);
-			$results  = $connection->get("https://api.twitter.com/1.1/users/lookup.json?user_id=$user_ids");
+			$user_ids = implode('%2C', $implode);
+			$results  = $connection->get('https://api.twitter.com/1.1/users/lookup.json?user_id='.$user_ids);
 			foreach ($results as $profile) {
 				$profiles[$profile->name] = $profile;
 			}
 		}
 	}
-
 	// write out data
-	echo '<pre>Results for: ';
 	foreach ($profiles as $profile) {
 		echo $i.'-'.$profile->name.'<br />';
 		$i++;
 	}
-	echo '</pre>';
 }
 
 /* Run the application */
