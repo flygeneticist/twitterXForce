@@ -52,7 +52,7 @@ function get_followers($usr) {
 
 	while ($cursor != 0) {
 		$connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_access_token, $oauth_access_token_secret);
-		$cursor     = '&cursor='+$cursor;
+		$cursor     = '&cursor='.$cursor;
 		$ids        = $connection->get('https://api.twitter.com/1.1/friends/ids.json?screen_name='.$usr.$cursor);
 		$cursor     = $ids->next_cursor;
 		if (!is_array($ids->ids)) {
