@@ -23,6 +23,7 @@ $app->get('/twitter', function () use ($app) {
 	});
 
 $app->post('/twitter', function () use ($app) {
+		echo '<h3>Here are the results of your API call</h3><br /><p>'.$data.'</p>';
 		$data = array();
 		$app['monolog']->addDebug('logging POST Twitter page output.');
 		$users = $_POST['users'];
@@ -31,9 +32,10 @@ $app->post('/twitter', function () use ($app) {
 			foreach ($users as $usr) {
 				array_push($data, get_followers($usr));
 			}
-			return '<h3>Here are the results of your API call</h3><br /><p>'.$data.'</p>';
+			echo ($data);
+			return '<h1>That\'s all the data!</h1>';
 		} else {
-			return 'Users were not supplied correctly.';
+			return 'ERROR: Users were not supplied correctly.';
 		}
 	});
 
