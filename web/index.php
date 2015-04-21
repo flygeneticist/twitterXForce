@@ -45,19 +45,19 @@ function get_followers($usr) {
 	$followers = array();
 	// Access tokens are stored as environment varibales on Heroku server.
 	$settings = array(
-		'oauth_access_token'        => getenv('access_token'),
-		'oauth_access_token_secret' => getenv('access_token_secret'),
 		'consumer_key'              => getenv('consumer_key'),
-		'consumer_secret'           => getenv('consumer_key_secret')
+		'consumer_secret'           => getenv('consumer_key_secret'),
+		'oauth_access_token'        => getenv('access_token'),
+		'oauth_access_token_secret' => getenv('access_token_secret')
 	);
 
 	// setup for twitter API request
 	$twitter       = new TwitterAPIExchange($settings);
-	$url           = 'https://api.twitter.com/1.1/followers/list.json';
-	$requestMethod = 'GET';
-	$getField      = '?skip_status=1&count=200&screen_name=';
+	$url           = urlencode('https://api.twitter.com/1.1/followers/list.json');
+	$requestMethod = urlencode('GET');
+	$getField      = '?count=200&screen_name=';
 	$cursor        = -1;
-	$getField_u    = $getField.$usr;
+	$getField_u    = urlencode($getField.$usr."skip_status=1");
 
 	do {
 		$res = $twitter->setGetfield($getField_u)
