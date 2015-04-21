@@ -44,6 +44,7 @@ $app->post('/twitter', function () use ($app) {
 //  HELPER FUNCTIONS
 function get_followers($usr) {
 	$profiles = array();
+	$cursor   = -1;
 	// Access tokens are stored as environment varibales on Heroku server.
 	$consumer_key              = getenv('consumer_key');
 	$consumer_secret           = getenv('consumer_key_secret');
