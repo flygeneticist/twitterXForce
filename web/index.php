@@ -30,9 +30,11 @@ $app->post('/twitter', function () use ($app) {
 		if ($users != null && $users != '') {
 			$users = explode(',', $users);
 			foreach ($users as $usr) {
+				echo '<div><p>Followers of: '.$usr.'</p>';
 				array_push($data, get_followers($usr));
+				echo '</div>';
 			}
-			return '<h1>That\'s all the data!</h1>';
+			return '<h3>That\'s all the data!</h3>';
 		} else {
 			return 'ERROR: Users were not supplied correctly.';
 		}
@@ -59,13 +61,16 @@ function get_followers($usr) {
 	$getField_u    = urlencode($getField.$usr.'skip_status=1');
 	echo $usr;
 	do {
-		$res = $twitter->setGetfield($getField_u)
-		               ->buildOauth($url, $requestMethod)
-		               ->performRequest();
-		array_push($followers, json_decode($res, $assoc = TRUE));
+		// grab the data from the API and store as associative array
+		$res = json_decode($twitter->setGetfield($getField_u)
+			->buildOauth($url, $requestMethod)->performRequest()
+			, $assoc = TRUE);
+		array_push($followers, $res);
 		$cursor = $res['next_cursor'];
-		echo json_decode($res, $assoc = TRUE);
-		echo 'Cursor#: '.$cursor;
+		// write out data
+		echo '<pre>';
+		print_r($res);
+		echo '</pre>';
 	} while ($cursor != 0);
 	return $followers;
 }
