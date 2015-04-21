@@ -32,7 +32,6 @@ $app->post('/twitter', function () use ($app) {
 			foreach ($users as $usr) {
 				array_push($data, get_followers($usr));
 			}
-			echo ($data);
 			return '<h1>That\'s all the data!</h1>';
 		} else {
 			return 'ERROR: Users were not supplied correctly.';
@@ -57,15 +56,16 @@ function get_followers($usr) {
 	$requestMethod = urlencode('GET');
 	$getField      = '?count=200&screen_name=';
 	$cursor        = -1;
-	$getField_u    = urlencode($getField.$usr."skip_status=1");
-
+	$getField_u    = urlencode($getField.$usr.'skip_status=1');
+	echo $usr;
 	do {
 		$res = $twitter->setGetfield($getField_u)
 		               ->buildOauth($url, $requestMethod)
 		               ->performRequest();
-		echo $res;
 		array_push($followers, json_decode($res, $assoc = TRUE));
 		$cursor = $res['next_cursor'];
+		echo json_decode($res, $assoc = TRUE);
+		echo 'Cursor#: '.$cursor;
 	} while ($cursor != 0);
 	return $followers;
 }
