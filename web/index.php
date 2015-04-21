@@ -58,8 +58,7 @@ function get_followers($usr) {
 	$requestMethod = urlencode('GET');
 	$getField      = '?count=200&screen_name=';
 	$cursor        = -1;
-	$getField_u    = urlencode($getField.$usr.'skip_status=1');
-	echo $usr;
+	$getField_u    = urlencode($getField.$usr.'&skip_status=1');
 	do {
 		// grab the data from the API and store as associative array
 		$res = json_decode($twitter->setGetfield($getField_u)
