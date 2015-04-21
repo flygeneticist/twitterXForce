@@ -15,6 +15,7 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
 
 // Our web handlers
 $app->get('/',
+
 function () use ($app) {
 		$app['monolog']->addDebug('logging output.');
 		return 'Hello';
@@ -57,21 +58,21 @@ function get_followers($usr) {
 		$cursor     = '&cursor='.$cursor;
 		$ids        = $connection->get('https://api.twitter.com/1.1/followers/ids.json?screen_name='.$usr.$cursor);
 		$cursor     = $ids->next_cursor;
-		if (!is_array($ids->ids)) {
-			break;
-		} else {
-			$ids_arrays = array_chunk($ids->ids, 100);
-			$i          = 1;
-			//
-			foreach ($ids_arrays as $implode) {
-				$user_ids = implode(',', $implode);
-				$results  = $connection->get('https://api.twitter.com/1.1/users/lookup.json?user_id='.$user_ids);
-				foreach ($results as $profile) {
-					$profiles[$profile->name] = $profile;
-				}
+
+		if (!is_array($ids->ids)) {break;}
+
+		$ids_arrays = array_chunk($ids->ids, 100);
+		$i          = 1;
+
+		foreach ($ids_arrays as $implode) {
+			$user_ids = implode(',', $implode);
+			$results  = $connection->get("https://api.twitter.com/1.1/users/lookup.json?user_id=$user_ids");
+			foreach ($results as $profile) {
+				$profiles[$profile->name] = $profile;
 			}
 		}
 	}
+
 	// write out data
 	echo '<pre>Results for: ';
 	foreach ($profiles as $profile) {
