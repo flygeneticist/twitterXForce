@@ -1,6 +1,6 @@
 <?php
 ini_set('max_execution_time', 600);
-ini_set('memory_limit', '1024M');
+ini_set('memory_limit', '256M');
 
 require ('../vendor/autoload.php');
 require_once ('TwitterOAuth.php');
@@ -51,32 +51,33 @@ function get_followers($usr) {
 	$oauth_access_token_secret = getenv('access_token_secret');
 
 	while ($cursor != 0) {
-	    $connection = new TwitterOAuth($consumerKey, $consumerKeySecret, $accessToken, $accessTokenSecret);
-	    $cursor = "&cursor=" + $cursor;
-	    $ids = $connection->get("https://api.twitter.com/1.1/friends/ids.json?screen_name=".$usr.$cursor);
-	    $cursor = $ids->next_cursor;
-	    if (!is_array($ids->ids)) {
-	    	break;
-	   	} else {
-		    $ids_arrays = array_chunk($ids->ids, 100);
-		    $i=1;
-		    //
-		    foreach ($ids_arrays as $implode) {
-		        $user_ids = implode(',', $implode);
-		        $results  = $connection->get("https://api.twitter.com/1.1/users/lookup.json?user_id=".$user_ids);
-		        foreach ($results as $profile) {
-		            $profiles[$profile->name] = $profile;
-		        }
-		    }
+		$connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_access_token, $oauth_access_token_secret);
+		$cursor     = '&cursor='+$cursor;
+		$ids        = $connection->get('https://api.twitter.com/1.1/friends/ids.json?screen_name='.$usr.$cursor);
+		$cursor     = $ids->next_cursor;
+		if (!is_array($ids->ids)) {
+			break;
+		} else {
+			$ids_arrays = array_chunk($ids->ids, 100);
+			$i          = 1;
+			//
+			foreach ($ids_arrays as $implode) {
+				$user_ids = implode(',', $implode);
+				$results  = $connection->get('https://api.twitter.com/1.1/users/lookup.json?user_id='.$user_ids);
+				foreach ($results as $profile) {
+					$profiles[$profile->name] = $profile;
+				}
+			}
 		}
 	}
 	// write out data
 	echo '<pre>Results for: ';
-	foreach($profiles as $profile) {
-		echo $i. "-" .$profile->name . "<br />";
+	foreach ($profiles as $profile) {
+		echo $i.'-'.$profile->name.'<br />';
 		$i++;
 	}
 	echo '</pre>';
+}
 
 /* Run the application */
 $app->run();
