@@ -34,7 +34,7 @@ $app->post('/twitter', function () use ($app) {
 			$users = explode(',', $users);
 			foreach ($users as $usr) {
 				echo '<div><p>Followers of: '.$usr.'</p>';
-				get_followers($usr);
+				echo get_followers($usr);
 				echo '</div>';
 			}
 			return '<h3>That\'s all the data!</h3>';
@@ -48,37 +48,32 @@ function get_followers($usr) {
 	$profiles = array();
 	$cursor   = -1;
 	// Access tokens are stored as environment varibales on Heroku server.
-	$consumer_key              = getenv('consumer_key');
-	$consumer_secret           = getenv('consumer_key_secret');
-	$oauth_access_token        = getenv('access_token');
-	$oauth_access_token_secret = getenv('access_token_secret');
+	$consumer_key        = getenv('consumer_key');
+	$consumer_secret     = getenv('consumer_key_secret');
+	$access_token        = getenv('access_token');
+	$access_token_secret = getenv('access_token_secret');
 
-	while ($cursor != 0) {
-		$connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_access_token, $oauth_access_token_secret);
-		$cursor     = '&cursor='.$cursor;
-		$ids        = $connection->get('https://api.twitter.com/1.1/followers/ids.json?screen_name='.$usr.$cursor);
-		$cursor     = $ids->next_cursor;
+	$connection = new TwitterOAuth($consumer_key, $consumer_secret, $access_token, $access_token_secret);
+	// Empty array that will be used to store followers.
+	$profiles = array();
+	// Get the ids of all followers.
+	$ids = $connection->get('followers/ids');
+	// Chunk the ids in to arrays of 100.
+	$ids_arrays = array_chunk($ids, 100);
 
-		if (!is_array($ids->ids)) {break;}
-
-		$ids_arrays = array_chunk($ids->ids, 100);
-		$i          = 1;
-
-		foreach ($ids_arrays as $implode) {
-			$user_ids = implode('%2C', $implode);
-			$results  = $connection->get('https://api.twitter.com/1.1/users/lookup.json?user_id='.$user_ids);
-			foreach ($results as $profile) {
-				$profiles[$profile->name] = $profile;
-			}
+	// Loop through each array of 100 ids.
+	foreach ($ids_arrays as $implode) {
+		// Perform a lookup for each chunk of 100 ids.
+		$results = $connection->get('users/lookup', array('user_id' => implode(',', $implode)));
+		// Loop through each profile result.
+		foreach ($results as $profile) {
+			// Use screen_name as key for $profiles array.
+			$profiles[$profile->screen_name] = $profile;
 		}
 	}
-	// write out data
-	foreach ($profiles as $profile) {
-		echo $i.'-'.$profile->name.'<br />';
-		$i++;
-	}
+	// Array of user objects.
+	return var_dump($profiles);
 }
-
 /* Run the application */
 $app->run();
 
