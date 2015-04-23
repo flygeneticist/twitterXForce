@@ -45,18 +45,14 @@ $app->post('/twitter', function () use ($app) {
 
 //  HELPER FUNCTIONS
 function get_followers($usr) {
+	require ('config.php');
 	$profiles = array();
 	$cursor   = -1;
-	// Access tokens are stored as environment varibales on Heroku server.
-	$consumer_key              = getenv('consumer_key');
-	$consumer_secret           = getenv('consumer_key_secret');
-	$oauth_access_token        = getenv('access_token');
-	$oauth_access_token_secret = getenv('access_token_secret');
 
 	while ($cursor != 0) {
 		$connection = new TwitterOAuth($consumer_key, $consumer_secret, $oauth_access_token, $oauth_access_token_secret);
 		$cursor     = '&cursor='.$cursor;
-		$ids        = $connection->get('https://api.twitter.com/1.1/followers/ids.json?screen_name='.$usr.$cursor);
+		$ids        = $connection->get('https://api.twitter.com/1.1/followers/list.json?'.$cursor.'screen_name='.$usr);
 		$cursor     = $ids->next_cursor;
 
 		if (!is_array($ids->ids)) {break;}
