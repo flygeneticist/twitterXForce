@@ -34,7 +34,7 @@ $app->post('/twitter', function () use ($app) {
 			$users = explode(',', $users);
 			foreach ($users as $usr) {
 				echo '<div><p>Followers of: '.$usr.'</p>';
-				echo get_followers($usr);
+				print_r(get_followers($usr));
 				echo '</div>';
 			}
 			return '<h3>That\'s all the data!</h3>';
@@ -58,6 +58,7 @@ function get_followers($usr) {
 	$profiles = array();
 	// Get the ids of all followers.
 	$ids = $connection->get('followers/ids');
+	echo "Raw IDs: ".print_r($ids);
 	// Chunk the ids in to arrays of 100.
 	$ids_arrays = array_chunk($ids->ids, 100);
 
