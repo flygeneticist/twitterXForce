@@ -34,7 +34,7 @@ $app->post('/twitter', function () use ($app) {
 			$users = explode(',', $users);
 			foreach ($users as $usr) {
 				echo '<div><p>Followers of: '.$usr.'</p>';
-				get_followers($usr);
+				echo get_followers($usr);
 				echo '</div>';
 			}
 			return '<h3>That\'s all the data!</h3>';
