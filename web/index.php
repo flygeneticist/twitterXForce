@@ -59,7 +59,7 @@ function get_followers($usr) {
 	// Get the ids of all followers.
 	$ids = $connection->get('followers/ids');
 	// Chunk the ids in to arrays of 100.
-	$ids_arrays = array_chunk($ids, 100);
+	$ids_arrays = array_chunk($ids->ids, 100);
 
 	// Loop through each array of 100 ids.
 	foreach ($ids_arrays as $implode) {
